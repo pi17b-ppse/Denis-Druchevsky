@@ -24,13 +24,13 @@ namespace Snake
         public Form1()
         {
             InitializeComponent();
-            this.Text = "Snake";
+            this.Text = "Змейка";
             this.Width = _width;
             this.Height = _height;
             dirX = 1;
             dirY = 0;
             labelScore = new Label();
-            labelScore.Text = "Score: 0";
+            labelScore.Text = "Счет: 0";
             labelScore.Location = new Point(810, 10);
             this.Controls.Add(labelScore);
             snake[0] = new PictureBox();
@@ -44,7 +44,7 @@ namespace Snake
             _generateMap();
             _generateFruit();
             timer.Tick += new EventHandler(_update);
-            timer.Interval = 200;
+            timer.Interval = 100;
             timer.Start();
             this.KeyDown += new KeyEventHandler(OKP);
         }
@@ -73,7 +73,7 @@ namespace Snake
                     this.Controls.Remove(snake[_i]);            
                 }
                 score = 0;
-                labelScore.Text = "Score: " + score;
+                labelScore.Text = "Счет: " + score;
                 dirX = 1;
             }
             if (snake[0].Location.X > _height)
@@ -83,7 +83,7 @@ namespace Snake
                     this.Controls.Remove(snake[_i]);
                 }
                 score = 0;
-                labelScore.Text = "Score: " + score;
+                labelScore.Text = "Счет: " + score;
                 dirX = -1;
             }
             if (snake[0].Location.Y < 0)
@@ -93,7 +93,7 @@ namespace Snake
                     this.Controls.Remove(snake[_i]);
                 }
                 score = 0;
-                labelScore.Text = "Score: " + score;
+                labelScore.Text = "Счет: " + score;
                 dirY = 1;
             }
             if (snake[0].Location.Y > _height)
@@ -103,7 +103,7 @@ namespace Snake
                     this.Controls.Remove(snake[_i]);
                 }
                 score = 0;
-                labelScore.Text = "Score: " + score;
+                labelScore.Text = "Счет: " + score;
                 dirY = -1;
             }
         }
@@ -114,10 +114,12 @@ namespace Snake
             {
                 if(snake[0].Location == snake[_i].Location)
                 {
-                    for (int _j = _i; _j <= score; _j++)
+                    for (int _j = 1; _j <= score; _j++)
+                    {
                         this.Controls.Remove(snake[_j]);
-                    score = score - (score - _i + 1);
-                    labelScore.Text = "Score: " + score;
+                    }
+                    score = 0;
+                    labelScore.Text = "Счет: " + score;
                 }
             }
         }
@@ -126,7 +128,7 @@ namespace Snake
         {
             if(snake[0].Location.X == rI && snake[0].Location.Y == rJ)
             {
-                labelScore.Text = "Score: " + ++score;
+                labelScore.Text = "Счет: " + ++score;
                 snake[score] = new PictureBox();
                 snake[score].Location = new Point(snake[score - 1].Location.X + 40 * dirX, snake[score - 1].Location.Y - 40 * dirY);
                 snake[score].Size = new Size(_sizeOfSides-1, _sizeOfSides-1);
