@@ -1,0 +1,17 @@
+{
+  "name": "15gems",
+  "version": "1.0.0",
+  "description": "Игра в 'Пятнашки'",
+  "main": "js/index.js",
+  "scripts": {
+    "build": "babel js -d es5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6"
+  }
+}
