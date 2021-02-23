@@ -1,9 +1,4 @@
-/**
- * Пустая ячейка.
- *
- * @class EmptyField
- * @returns {HTMLDivElement} <div class="tile empty" unselectable="on"></div>
- */
+
 class EmptyField {
   constructor({ x, y }) {
     const el = document.createElement('div');
