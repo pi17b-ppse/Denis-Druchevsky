@@ -13,14 +13,12 @@ window.onload = function onloadHandler() {
     closeInfoBtn: document.querySelector('.close-btn'), // кнопка закрытия информации
     timer: null, // ссылка на setInterval, нужна для очистки
     // флаг блокировки обработки нажатий клавиш.
-    // Нужен чтоб отключить клавиатуру когда открыта вкладка "информация"
     keysBlocked: false,
     game,
     gameCompleted: false,
 
     openInfo() {
       // Edge бросает ошибку если открыть игру по протоколу file:// (запустить игру из проводника)
-      // https://stackoverflow.com/questions/32374875/localstorage-not-working-in-edge
       try {
         if (!window.localStorage) return;
         const currentTime = document.querySelector('.current .time');
