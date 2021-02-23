@@ -1,22 +1,24 @@
+/* eslint-disable import/extensions */
 import Game from './Game.js';
 
 
 window.onload = function onloadHandler() {
-
+  // запуск игры
   const game = new Game(document.querySelector('table.board'));
 
+  // app - представляет интерфейс приложения
   const app = {
     openInfoBtn: document.getElementsByClassName('quastions')[0], // информация
     shuffleBtn: document.getElementsByClassName('shuffle')[0], // перемешать
     closeInfoBtn: document.querySelector('.close-btn'), // кнопка закрытия информации
     timer: null, // ссылка на setInterval, нужна для очистки
-
+    // флаг блокировки обработки нажатий клавиш.
     keysBlocked: false,
     game,
     gameCompleted: false,
 
     openInfo() {
-    
+      // Edge бросает ошибку если открыть игру по протоколу file:// (запустить игру из проводника)
       try {
         if (!window.localStorage) return;
         const currentTime = document.querySelector('.current .time');
@@ -70,13 +72,16 @@ window.onload = function onloadHandler() {
   app.openInfoBtn.addEventListener('click', app.openInfo, false);
   app.closeInfoBtn.addEventListener('click', app.closeInfo, false);
 
+  // обработка нажатий клавиш
   window.addEventListener('keydown', (e) => {
     const code = e.keyCode;
-    if (code === 27 && app.keysBlocked) { app.closeInfo(); } 
+    // eslint-disable-next-line no-use-before-define
+    if (code === 27 && app.keysBlocked) { app.closeInfo(); } // 'Esc'
 
     if (!app.keysBlocked && code >= 37 && code <= 40) { game.trigger(code); }
   }, false);
 
+  // обработка события окончания игры (победы)
   game.oncompleteDo = () => {
     clearInterval(app.timer);
     app.timer = null;

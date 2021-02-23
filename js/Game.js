@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import Tile from './Tile.js';
 import EmptyField from './EmptyField.js';
 import PositionGenerator from './PositionGenerator.js';
@@ -5,6 +6,7 @@ import Board from './Board.js';
 
 const _cb = new WeakMap();
 
+// ключи для скрытых полей
 const _init = Symbol('init');
 const _move = Symbol('move');
 const _update = Symbol('update');
@@ -33,6 +35,7 @@ const getUniqRandom = function getUniqRandom(max) {
       i = random(max);
     }
     uniqs.push(i);
+  // getUniqRandom(max);
   }
   return uniqs;
 };
@@ -42,6 +45,7 @@ class Game {
     _cb.set(this, null);
     this.board = new Board(table);
     this.empty = null;
+    // eslint-disable-next-line no-param-reassign
     table.innerHTML = '';
 
     this[_init]();
@@ -56,31 +60,41 @@ class Game {
 
     const orders = getUniqRandom(15);
     const posgen = new PositionGenerator(3);
+    // window.posgen = posgen;
+
     for (let i = 0; i < 15; i += 1) {
       const pos = posgen.next();
-
+      // console.log(pos);
 
       const tile = new Tile(orders[i], pos);
       tile.on('trymove', this[_tileMoveHandle].bind(this));
+      // console.log(tile);
 
       this.fields.push(tile);
     }
     this.empty = new EmptyField(posgen.next());
     this.fields.push(this.empty);
- 
+    // console.log(this.fields);
+
 
     if (!this[_solvable](this.fields)) {
-
+    // console.log('_solvabled');
       this[_swap](0, 1);
     }
 
     this[_update]();
   }
 
+  /**
+ * Перемешать плитки и начать заново
+ *
+ * @memberof Game
+ */
   shuffle() {
     this[_init]();
   }
 
+  // поменять местами две плитки
   [_swap](i1, i2) {
     const i1pos = this.fields[i1].position;
     const i2pos = this.fields[i2].position;
@@ -92,7 +106,12 @@ class Game {
     this.fields[i2] = t;
   }
 
-
+  /**
+ * Проверить "собралась" ли игра
+ *
+ * @readonly
+ * @memberof Game
+ */
   get [_isCompleted]() {
     return !this.fields.some((item, i) => item.id > 0 && item.id - 1 !== i);
   }
@@ -125,7 +144,10 @@ class Game {
     return _cb.get(this);
   }
 
+  // проверить собирётся ли игра
+  // eslint-disable-next-line class-methods-use-this
   [_solvable](a) {
+  // eslint-disable-next-line no-var
     var kDisorder;
     let i;
     let len;
@@ -137,6 +159,8 @@ class Game {
     return !(kDisorder % 2);
   }
 
+  // проверить может ли двигаться плитка,
+  // если да, то куда. Инициировать перемещение плитки
   [_tileMoveHandle](tile) {
     const { x, y } = tile.position;
     const deltaX = x - this.empty.position.x;
@@ -148,7 +172,9 @@ class Game {
     else if (deltaX === 0 && deltaY === 1) this[_move]('up');
   }
 
+  // сдвинуть плитки
   [_move](direction) {
+  // console.log(this);
     if (
       direction === 'up'
       || direction === 'down'
@@ -169,6 +195,14 @@ class Game {
     } else throw new RangeError('Недопустимый аргумент! Метод принимает только: up, down, left, right.');
   }
 
+  /**
+ * Обработать ход, в зависимости от переданного кода
+ *
+ * код от 37 до 40 (включительно)
+ *
+ * @param {number} trigger
+ * @memberof Game
+ */
   trigger(trigger) {
     switch (trigger) {
       case 37: // 'left'
@@ -195,7 +229,7 @@ class Game {
       console.log('Головоломка сложена! Поздравляю!');
       this.gameTime = this.time;
 
-      try { 
+      try { // Edge бросает ошибку если открыть игру по протоколу file:// (запустить игру из проводника)
         const recorded = JSON.parse(localStorage.getItem('game-best-result'));
         const now = {
           time: this.time,
