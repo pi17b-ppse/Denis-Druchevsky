@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.1">
+    <info>
+        <title>Руководства по пятнашкам</title>
+        <author>
+            <personname>
+                <firstname>Дручевский</firstname>
+                <surname>Денис</surname>
+            </personname>
+        </author>
+    </info>
+    <sect1>
+        <title>Описание проекта</title>        
+        <para>«Пятнашки»</para>        
+        <para>ИИгра в 15 — популярная головоломка, придуманная в 1878 году Ноем Чепмэном. Представляет собой набор одинаковых квадратных костяшек с нанесёнными числами, заключённых в квадратную коробку. </para>
+        <para>Длина стороны коробки в четыре раза больше длины стороны костяшек для набора из 15 элементов, соответственно в коробке остаётся незаполненным одно квадратное поле. Цель игры — перемещая костяшки по коробке, добиться упорядочивания их по номерам, желательно сделав как можно меньше перемещений.</para>
+
+    	<mediaobject>
+    		<imageobject>
+    			<imagedata format="PNG" fileref="Sudoku.png"/>
+    		</imageobject>
+    	</mediaobject>
+    </sect1>
+    <sect1>
+        <title>Детали реализации</title> 
+    	
+        <para>Как реализована генерацию таблицы</para>
+        <example>
+            <programlisting>
+<![CDATA[
+    function createTable(sideSize = 4) {
+  const matrix = [];
+  const table = document.createDocumentFragment();
+
+  for (let i = 0; i < sideSize; i += 1) {
+    const row = document.createElement('tr');
+    matrix[i] = row;
+    table.appendChild(row);
+
+    for (let j = 0; j < sideSize; j += 1) {
+      const col = document.createElement('td');
+      matrix[i][j] = col;
+      row.appendChild(col);
+    }
+  }
+
+  return {
+    matrix,
+    table,
+  };
+}
+                ]]>
+
+</programlisting>
+        </example>
+        <example>
+            <title>Создание пустой ячейки</title>
+            <programlisting><![CDATA[
+	class EmptyField {
+  constructor({ x, y }) {
+    const el = document.createElement('div');
+    el.className = 'tile empty';
+    el.setAttribute('unselectable', 'on');
+    el.textContent = '';
+
+    this.el = el;
+    this.id = 16;
+    this.position = {
+      x,
+      y,
+    };
+  }
+}
+                ]]></programlisting>
+        </example>
+        <example>
+            <title>Передвижение плиток</title>
+            <programlisting><![CDATA[
+lass Tile extends EventEmitter {
+  constructor(id, { x, y }) {
+    super();
+    const el = document.createElement('div');
+    el.classList.add('tile');
+    el.setAttribute('unselectable', 'on');
+    el.textContent = id;
+
+    // eslint-disable-next-line no-use-before-define
+    el.addEventListener('click', clickOrTouchHandle.bind(this), false);
+    // eslint-disable-next-line no-use-before-define
+    el.addEventListener('touchend', clickOrTouchHandle.bind(this), false);
+
+    this.el = el;
+    this.id = id;
+    this.position = {
+      x,
+      y,
+    };
+  }
+}
+
+function clickOrTouchHandle(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  this.emit('trymove', this); // эмитирование события - "попытка передвинуть плитку"
+}
+
+                ]]></programlisting>
+
+        </example>
+        <example>
+            <title>Проверка на победу</title>
+            <programlisting><![CDATA[
+ get [_isCompleted]() {
+    return !this.fields.some((item, i) => item.id > 0 && item.id - 1 !== i);
+  }
+
+  get time() {
+    if (this.gameTime) return this.gameTime;
+    let delta = 0;
+    let timer = '0 секунд';
+    if (this[_timeStart]) {
+      delta = (Date.now() - this[_timeStart]);
+      timer = `${(delta / 1000).toFixed(0)} секунд`;
+    }
+    return timer;
+  }
+
+  get steps() {
+    return this[_steps];
+  }
+
+
+  get oncompleteDo() {
+    return _cb.get(this);
+  }
+
+  set oncompleteDo(fn) {
+    if (typeof fn === 'function') {
+      _cb.set(this, fn);
+    }
+
+    return _cb.get(this);
+  }
+
+
+                ]]></programlisting>
+                
+        </example>
+    </sect1>
+</article>
